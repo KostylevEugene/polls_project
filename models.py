@@ -30,6 +30,10 @@ class Poll(Base):
     user_id = Column(Integer(), ForeignKey(User.id), index=True, nullable=False)
     polls_name = Column(String(120))
 
+    def __init__(self, user_id, polls_name):
+        self.user_id = user_id
+        self.polls_name = polls_name
+
     def __repr__(self):
         return f'Poll: {self.id}, {self.polls_name}'
 
@@ -40,6 +44,10 @@ class Questions(Base):
     id = Column(Integer(), primary_key=True)
     polls_id = Column(Integer(), ForeignKey(Poll.id), index=True, nullable=False)
     question = Column(String(240))
+
+    def __init__(self, polls_id, question):
+        self.polls_id = polls_id
+        self.question = question
 
     def __repr__(self):
         return f'Question: {self.id}, {self.question}'
@@ -53,6 +61,12 @@ class Users_answers(Base):
     polls_id = Column(Integer(), ForeignKey(Poll.id), index=True, nullable=False)
     question_id = Column(Integer(), ForeignKey(Questions.id), index=True, nullable=False)
     answer = Column(String(60))
+
+    def __init__(self, user_id, polls_id, question_id, answer):
+        self.user_id = user_id
+        self.polls_id = polls_id
+        self.question_id = question_id
+        self.answer = answer
 
     def __repr__(self):
         return f'Answer: {self.id}, {self.answer}'
