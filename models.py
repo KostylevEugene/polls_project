@@ -1,6 +1,7 @@
+from db import Base, engine
+from marshmallow import Schema, fields
 from sqlalchemy import Column, Integer, String, ForeignKey
 
-from db import Base, engine
 
 class User(Base):
     __tablename__ = 'users'
@@ -20,6 +21,15 @@ class User(Base):
     def __repr__(self):
         return f'User: {self.id}, {self.name}'
 
+
+class UserSchema(Schema):
+    id = fields.Int()
+    name = fields.Str()
+    email = fields.Email()
+    password = fields.Str()
+    role = fields.Str()
+
+
 class Poll(Base):
     __tablename__ = 'polls'
 
@@ -38,6 +48,12 @@ class Poll(Base):
         return f'Poll: {self.id}, {self.polls_name}'
 
 
+class PollSchema(Schema):
+    id = fields.Int()
+    user_id = fields.Int()
+    polls_name = fields.Str()
+
+
 class Questions(Base):
     __tablename__ = 'questions'
 
@@ -51,6 +67,12 @@ class Questions(Base):
 
     def __repr__(self):
         return f'Question: {self.id}, {self.question}'
+
+
+class QuestionSchema(Schema):
+    id = fields.Int()
+    polls_id = fields.Int()
+    question = fields.Str()
 
 
 class Users_answers(Base):
@@ -70,6 +92,14 @@ class Users_answers(Base):
 
     def __repr__(self):
         return f'Answer: {self.id}, {self.answer}'
+
+
+class Users_answersSchema(Schema):
+    id = fields.Int()
+    user_id = fields.Int()
+    polls_id = fields.Int()
+    question_id = fields.Int()
+    answer = fields.Str()
 
 
 if __name__ == "__main__":
