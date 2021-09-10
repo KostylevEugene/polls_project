@@ -14,6 +14,9 @@ def index():
 def new_poll():
     pass
 
+@app.route('/registration')
+def registration():
+    pass
 
 if __name__ == '__main__':
     app.run(debug=True)
