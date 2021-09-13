@@ -28,11 +28,10 @@ def registration():
 
     return user_schema.dump(new_user)
 
-@app.route('/users', methods=['GET'])
-def get_all_users():
-    all_users = User.query.all()
-    result = user_schema.dump(all_users)
-    return jsonify(result)
+@app.route('/users/<id>', methods=['GET'])
+def get_all_users(id):
+    user = User.query.get(id)
+    return user_schema.dump(user)
 
 
 
