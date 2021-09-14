@@ -1,10 +1,13 @@
 from flask import Flask, jsonify, request
+from forms import RegisterForm
 from models import *
 from db import db_session
 
 app = Flask(__name__)
 
 user_schema = UserSchema()
+
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -14,12 +17,18 @@ def index():
 def new_poll():
     pass
 
-@app.route('/registration', methods=['POST'])
+@app.route('/registration', methods=['GET', 'POST'])
 def registration():
-    name = request.json['name']
-    email = request.json['email']
-    password = request.json['password']
-    role = request.json['role']
+    form = RegisterForm()
+
+    if method == 'POST' and form.validate():
+
+        name = request.json['name']
+        email = request.json['email']
+        password = request.json['password']
+        valid_password = request.json['valid_password']
+        role = 'signed-up'
+
 
     new_user = User(name, email, password, role)
 
