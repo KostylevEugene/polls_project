@@ -19,6 +19,7 @@ def new_poll():
 
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
+
     form = RegisterForm()
 
     if request.method == 'POST':
@@ -29,13 +30,13 @@ def registration():
         valid_password = request.json['valid_password']
         role = 'signed-up'
 
+        if form.name:
+            new_user = User(name, email, password, role)
 
-    new_user = User(name, email, password, role)
+            db_session.add(new_user)
+            db_session.commit()
 
-    db_session.add(new_user)
-    db_session.commit()
-
-    return user_schema.dump(new_user)
+            return user_schema.dump(new_user)
 
 @app.route('/users/<id>', methods=['GET'])
 def get_all_users(id):

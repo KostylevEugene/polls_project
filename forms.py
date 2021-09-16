@@ -30,3 +30,4 @@ class RegisterForm(FlaskForm):
                                                     Regexp(r'[a-zA-Z0-9/+!#$%^&*()`~]+', 
                                                             message='Password has permitted valid symbols - a-zA-Z0-9/+!#$%^&*()`~')])
 
+    register = SubmitField('Sign up')
