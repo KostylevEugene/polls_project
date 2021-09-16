@@ -21,7 +21,7 @@ def new_poll():
 def registration():
     form = RegisterForm()
 
-    if method == 'POST' and form.validate():
+    if request.method == 'POST':
 
         name = request.json['name']
         email = request.json['email']
