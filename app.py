@@ -157,17 +157,5 @@ def newpoll():
         return jsonify({"method not allowed"}), 405
 
 
-
-        # poll_id = get_poll_id(poll_name)
-        # #
-        # # for q in questions:
-        # question_in_json = json.dumps(questions)
-        # # new_question = Questions(poll_id, question_in_json)
-        # # db_session.add(new_question)
-        # #
-        # # db_session.commit()
-        # return jsonify({'msg': question_in_json})
-
-
 if __name__ == '__main__':
     app.run(debug=True)
