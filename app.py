@@ -1,13 +1,34 @@
+import datetime
+import json
+
+from config import *
 from db import db_session
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
+from flask_jwt_extended import JWTManager, create_access_token, verify_jwt_in_request, \
+    set_access_cookies, get_jwt_identity, create_refresh_token
+from flask_jwt_extended.exceptions import NoAuthorizationError
 from forms import RegisterForm
 from models import *
-from queries import signed_in_user
+from queries import *
+import hashlib
+import bcrypt
 
 app = Flask(__name__)
 
-user_schema = UserSchema()
+app.config['SECRET_KEY'] = SECRET_KEY
 
+app.config['JWT_TOKEN_LOCATION'] = JWT_TOKEN_LOCATION
+app.config["JWT_COOKIE_SECURE"] = JWT_COOKIE_SECURE
+app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
+app.config["JWT_COOKIE_CSRF_PROTECT"] = JWT_COOKIE_CSRF_PROTECT
+jwt = JWTManager(app)
+salt = bcrypt.gensalt()
+expiration_time = 20000
+
+
+user_schema = UserSchema()
+# question_schema = QuestionSchema()
+# poll_schema = PollSchema()
 
 @app.route('/')
 @app.route('/index')
@@ -38,7 +59,9 @@ def registration():
             return jsonify({'msg': "Such user has already exists"}), 404
 
         else:
-            new_user = User(name, email, password, role)
+            hash_pass = bcrypt.hashpw(password.encode("utf8"), salt).decode("utf8")
+
+            new_user = User(name, email, hash_pass, role)
 
             db_session.add(new_user)
             db_session.commit()
@@ -52,13 +75,88 @@ def registration():
         return jsonify({'msg': 'Allow GET, POST methods'}), 200
 
     else:
-        jsonify({"method not allowed"}), 405
+        return jsonify({"method not allowed"}), 405
+
+
+@app.route('/', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/log', methods=['GET', 'POST'])
+def log():
+    session['username'] = 'guest'
+
+    if request.method == 'POST':
+        email = request.json['email']
+        password = request.json['password']
+
+        old_user = signed_in_user(email)
+
+        if old_user != email:
+            return jsonify({'msg': 'There is no such email'}), 201
+
+        else:
+            existed_password = get_password_by_email(email)
+            if bcrypt.checkpw(password.encode('utf8'), existed_password.encode('utf8')):
+                session['username'] = email
+                refresh_token = create_refresh_token(identity=email,
+                                                     expires_delta=datetime.timedelta(seconds=expiration_time))
+                access_token = create_access_token(identity=email,
+                                                   expires_delta=datetime.timedelta(seconds=expiration_time))
+                response = jsonify({'login': True, 'JWT': access_token, 'refresh_token': refresh_token})
+                app.config['JWT_COOKIE_CSRF_PROTECT'] = False
+                response.status_code = 200
+                return response
+            else:
+                jsonify({'msg': 'Wrong password'}), 407
+
+    if request.method == 'GET':
+        return jsonify({'msg': 'Login page'}), 200
+
+    if request.method == 'OPTIONS':
+        return jsonify({'msg': 'Allow GET, POST methods'}), 200
+
+    else:
+        return jsonify({"method not allowed"}), 405
 
 @app.route('/users/<id>', methods=['GET'])
 def get_all_users(id):
     user = User.query.get(id)
     return user_schema.dump(user)
 
+
+@app.route('/newpoll', methods=['GET', 'POST', 'OPTIONS'])
+def newpoll():
+    if request.method == 'POST':
+        poll_name = request.json['Poll_name']
+        question = request.json['Questions']
+        question_in_json = json.dumps(question)
+
+        user_id = get_user_id(session['username'])
+
+        poll = Poll(user_id, poll_name, question_in_json)
+        db_session.add(poll)
+        db_session.commit()
+
+        return jsonify({'msg': 'The poll was successfully created'}), 200
+
+    if request.method == 'GET':
+        return jsonify({'msg': 'New Poll page'}), 200
+
+    if request.method == 'OPTIONS':
+        return jsonify({'msg': 'Allow GET, POST methods'}), 200
+
+    else:
+        return jsonify({"method not allowed"}), 405
+
+
+
+        # poll_id = get_poll_id(poll_name)
+        # #
+        # # for q in questions:
+        # question_in_json = json.dumps(questions)
+        # # new_question = Questions(poll_id, question_in_json)
+        # # db_session.add(new_question)
+        # #
+        # # db_session.commit()
+        # return jsonify({'msg': question_in_json})
 
 
 if __name__ == '__main__':

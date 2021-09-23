@@ -35,44 +35,46 @@ class Poll(Base):
 
     id = Column(Integer(), primary_key=True)
     # ForeignKey проверяет наличие id в таблице User
-    # index позволяет делать выборку по столбцу быстрее
+    # index позволяет делать выборку по столбцу быстрее (что это значит?)
     # nullable разрешает оставлять поле пустым
     user_id = Column(Integer(), ForeignKey(User.id), index=True, nullable=False)
     polls_name = Column(String(120))
+    question = Column(String(1000))
 
-    def __init__(self, user_id, polls_name):
+    def __init__(self, user_id, polls_name, question):
         self.user_id = user_id
         self.polls_name = polls_name
+        self.question = question
 
     def __repr__(self):
         return f'Poll: {self.id}, {self.polls_name}'
 
 
-class PollSchema(Schema):
-    id = fields.Int()
-    user_id = fields.Int()
-    polls_name = fields.Str()
+# class PollSchema(Schema):
+#     id = fields.Int()
+#     user_id = fields.Int()
+#     polls_name = fields.Str()
+#     questions = fields.Str()
 
 
-class Questions(Base):
-    __tablename__ = 'questions'
+# class Questions(Base):
+#     __tablename__ = 'questions'
+#
+#     id = Column(Integer(), primary_key=True)
+#     polls_id = Column(Integer(), ForeignKey(Poll.id), index=True, nullable=False)
+#     question = Column(String(1000))
+#
+#     def __init__(self, polls_id, question):
+#         self.polls_id = polls_id
+#         self.question = question
+#
+#     def __repr__(self):
+#         return f'Question: {self.id}, {self.question}'
 
-    id = Column(Integer(), primary_key=True)
-    polls_id = Column(Integer(), ForeignKey(Poll.id), index=True, nullable=False)
-    question = Column(String(240))
 
-    def __init__(self, polls_id, question):
-        self.polls_id = polls_id
-        self.question = question
-
-    def __repr__(self):
-        return f'Question: {self.id}, {self.question}'
-
-
-class QuestionSchema(Schema):
-    id = fields.Int()
-    polls_id = fields.Int()
-    question = fields.Str()
+# class QuestionSchema(Schema):
+#     id = fields.Int()
+#     question = fields.Str()
 
 
 class Users_answers(Base):
@@ -81,7 +83,6 @@ class Users_answers(Base):
     id = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey(User.id), index=True, nullable=False)
     polls_id = Column(Integer(), ForeignKey(Poll.id), index=True, nullable=False)
-    question_id = Column(Integer(), ForeignKey(Questions.id), index=True, nullable=False)
     answer = Column(String(60))
 
     def __init__(self, user_id, polls_id, question_id, answer):
@@ -94,12 +95,12 @@ class Users_answers(Base):
         return f'Answer: {self.id}, {self.answer}'
 
 
-class Users_answersSchema(Schema):
-    id = fields.Int()
-    user_id = fields.Int()
-    polls_id = fields.Int()
-    question_id = fields.Int()
-    answer = fields.Str()
+# class Users_answersSchema(Schema):
+#     id = fields.Int()
+#     user_id = fields.Int()
+#     polls_id = fields.Int()
+#     question_id = fields.Int()
+#     answer = fields.Str()
 
 
 if __name__ == "__main__":
