@@ -124,18 +124,28 @@ def get_all_users(id):
 
 @app.route('/newpoll', methods=['GET', 'POST', 'OPTIONS'])
 def newpoll():
+    try:
+        verify_jwt_in_request(locations=['headers', 'cookies'])
+    except NoAuthorizationError:
+        return jsonify({'msg': 'Login please!'}, 401)
+
+
     if request.method == 'POST':
         poll_name = request.json['Poll_name']
         question = request.json['Questions']
         question_in_json = json.dumps(question)
 
-        user_id = get_user_id(session['username'])
+        if poll_name != get_poll_name(poll_name):
+            user_id = get_user_id(session['username'])
 
-        poll = Poll(user_id, poll_name, question_in_json)
-        db_session.add(poll)
-        db_session.commit()
+            poll = Poll(user_id, poll_name, question_in_json)
+            db_session.add(poll)
+            db_session.commit()
 
-        return jsonify({'msg': 'The poll was successfully created'}), 200
+            return jsonify({'msg': 'The poll was successfully created'}), 200
+
+        else:
+            return jsonify({'msg': 'Such poll name has already existed'})
 
     if request.method == 'GET':
         return jsonify({'msg': 'New Poll page'}), 200

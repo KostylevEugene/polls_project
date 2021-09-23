@@ -13,9 +13,9 @@ def get_user_id(email):
     user_id = db_session.query(User.id).filter(User.email == email).scalar()
     return user_id
 
-def get_poll_id(poll_name):
-    poll_id = db_session.query(Poll.id).filter(Poll.polls_name == poll_name).scalar()
-    return poll_id
+def get_poll_name(poll_name):
+    name = db_session.query(Poll.polls_name).filter(Poll.polls_name == poll_name).scalar()
+    return name
 
 
 # if __name__ == "__main__":
