@@ -40,11 +40,14 @@ class Poll(Base):
     user_id = Column(Integer(), ForeignKey(User.id), index=True, nullable=False)
     polls_name = Column(String(120))
     question = Column(String(1000))
+    counter = Column(String(1000))
 
-    def __init__(self, user_id, polls_name, question):
+    def __init__(self, user_id, polls_name, question, counter):
         self.user_id = user_id
         self.polls_name = polls_name
         self.question = question
+        self.counter = counter
+
 
     def __repr__(self):
         return f'Poll: {self.id}, {self.polls_name}'

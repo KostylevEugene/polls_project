@@ -138,14 +138,22 @@ def newpoll():
         if poll_name != get_poll_name(poll_name):
             user_id = get_user_id(session['username'])
 
-            poll = Poll(user_id, poll_name, question_in_json)
+            counter_dict = json.loads(question_in_json)
+
+            for q in counter_dict.values():
+                for ans in q:
+                    q[ans] = "0"
+
+            counter_in_json = json.dumps(counter_dict)
+
+            poll = Poll(user_id, poll_name, question_in_json, counter_in_json)
             db_session.add(poll)
             db_session.commit()
 
             return jsonify({'msg': 'The poll was successfully created'}), 200
 
         else:
-            return jsonify({'msg': 'Such poll name has already existed'})
+            return jsonify({'msg': 'Such poll name has already existed'}), 201
 
     if request.method == 'GET':
         return jsonify({'msg': 'New Poll page'}), 200
