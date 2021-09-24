@@ -78,7 +78,6 @@ def registration():
         return jsonify({"method not allowed"}), 405
 
 
-@app.route('/', methods=['GET', 'POST', 'OPTIONS'])
 @app.route('/log', methods=['GET', 'POST'])
 def log():
     session['username'] = 'guest'
@@ -133,6 +132,7 @@ def newpoll():
     if request.method == 'POST':
         poll_name = request.json['Poll_name']
         question = request.json['Questions']
+        access_level = request.json['Access_level']
         question_in_json = json.dumps(question)
 
         if poll_name != get_poll_name(poll_name):
@@ -146,14 +146,13 @@ def newpoll():
 
             counter_in_json = json.dumps(counter_dict)
 
-            poll = Poll(user_id, poll_name, question_in_json, counter_in_json)
+            poll = Poll(user_id, poll_name, question_in_json, counter_in_json, access_level)
             db_session.add(poll)
             db_session.commit()
 
             return jsonify({'msg': 'The poll was successfully created'}), 200
 
-        else:
-            return jsonify({'msg': 'Such poll name has already existed'}), 201
+        return jsonify({'msg': 'Such poll name has already existed'}), 201
 
     if request.method == 'GET':
         return jsonify({'msg': 'New Poll page'}), 200
@@ -164,6 +163,10 @@ def newpoll():
     else:
         return jsonify({"method not allowed"}), 405
 
+
+@app.route('/polls/<id>', methods=['GET', 'POST', 'OPTIONS'])
+def polls(id):
+    pass
 
 if __name__ == '__main__':
     app.run(debug=True)
