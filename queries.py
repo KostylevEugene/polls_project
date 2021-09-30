@@ -17,7 +17,12 @@ def get_poll_name(poll_name):
     name = db_session.query(Poll.polls_name).filter(Poll.polls_name == poll_name).scalar()
     return name
 
+def get_polls_list(email):
+    id = db_session.query(User.id).filter(User.email == email).scalar()
+    polls_list = db_session.query(Poll.polls_name).filter(Poll.user_id == id).all()
+    return polls_list
 
 # if __name__ == "__main__":
-# # #     print(type(signed_in_user('ef45@mail.eu')))
-#     print(get_password_by_email('Jake@mail.eu'))
+# # # #     print(type(signed_in_user('ef45@mail.eu')))
+# #     print(get_password_by_email('Jake@mail.eu'))
+#     print(get_polls_list('icds@mail.eu'))

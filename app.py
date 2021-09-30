@@ -126,7 +126,7 @@ def newpoll():
     try:
         verify_jwt_in_request(locations=['headers', 'cookies'])
     except NoAuthorizationError:
-        return jsonify({'msg': 'Login please!'}, 401)
+        return jsonify({'msg': 'Login please!'}), 401
 
 
     if request.method == 'POST':
@@ -164,9 +164,21 @@ def newpoll():
         return jsonify({"method not allowed"}), 405
 
 
+@app.route('/polls/', methods=['GET', 'POST', 'OPTIONS'])
+def polls():
+    try:
+        verify_jwt_in_request(locations=['headers', 'cookies'])
+    except NoAuthorizationError:
+        return jsonify({'msg': 'Login please!'}), 401
+
+    if request.method == ['GET']:
+        return jsonify({'msg': 'Polls page'}), 200
+
+
 @app.route('/polls/<id>', methods=['GET', 'POST', 'OPTIONS'])
-def polls(id):
+def get_poll():
     pass
+
 
 if __name__ == '__main__':
     app.run(debug=True)
