@@ -19,10 +19,27 @@ def get_poll_name(poll_name):
 
 def get_polls_list(email):
     id = db_session.query(User.id).filter(User.email == email).scalar()
-    polls_list = db_session.query(Poll.polls_name).filter(Poll.user_id == id).all()
-    return polls_list
+    raw_polls_list = db_session.query(Poll.polls_name).filter(Poll.user_id == id).all()
+
+    poll_list = []
+
+    for i in raw_polls_list:
+        for j in i:
+            poll_list.append(j)
+
+    return poll_list
+
+def get_polls_id(poll_name):
+    polls_id = db_session.query(Poll.id).filter(Poll.polls_name == poll_name).scalar()
+    return polls_id
+
+def get_questions_by_poll_id(poll_id):
+    questions = db_session.query(Poll.question).filter(Poll.id == poll_id).scalar()
+    return questions
+
 
 # if __name__ == "__main__":
-# # # #     print(type(signed_in_user('ef45@mail.eu')))
-# #     print(get_password_by_email('Jake@mail.eu'))
+#     print(type(signed_in_user('ef45@mail.eu')))
+#     print(get_password_by_email('Jake@mail.eu'))
 #     print(get_polls_list('icds@mail.eu'))
+#     print(get_polls_id('Computer73'))
