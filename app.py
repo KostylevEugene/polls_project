@@ -25,19 +25,18 @@ jwt = JWTManager(app)
 salt = bcrypt.gensalt()
 expiration_time = 20000
 
-
 user_schema = UserSchema()
-# question_schema = QuestionSchema()
-# poll_schema = PollSchema()
 
 @app.route('/')
 @app.route('/index')
 def index():
     return jsonify({'msg': 'Gello'})
 
+
 @app.route('/new_poll')
 def new_poll():
     pass
+
 
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
@@ -115,53 +114,12 @@ def log():
     else:
         return jsonify({"method not allowed"}), 405
 
+
 @app.route('/users/<id>', methods=['GET'])
 def get_all_users(id):
     user = User.query.get(id)
     return user_schema.dump(user)
 
-
-@app.route('/newpoll', methods=['GET', 'POST', 'OPTIONS'])
-def newpoll():
-    try:
-        verify_jwt_in_request(locations=['headers', 'cookies'])
-    except NoAuthorizationError:
-        return jsonify({'msg': 'Login please!'}), 401
-
-
-    if request.method == 'POST':
-        poll_name = request.json['Poll_name']
-        question = request.json['Questions']
-        access_level = request.json['Access_level']
-        question_in_json = json.dumps(question)
-
-        if poll_name != get_poll_name(poll_name):
-            user_id = get_user_id(session['username'])
-
-            counter_dict = json.loads(question_in_json)
-
-            for q in counter_dict.values():
-                for ans in q:
-                    q[ans] = "0"
-
-            counter_in_json = json.dumps(counter_dict)
-
-            poll = Poll(user_id, poll_name, question_in_json, counter_in_json, access_level)
-            db_session.add(poll)
-            db_session.commit()
-
-            return jsonify({'msg': 'The poll was successfully created'}), 200
-
-        return jsonify({'msg': 'Such poll name has already existed'}), 201
-
-    if request.method == 'GET':
-        return jsonify({'msg': 'New Poll page'}), 200
-
-    if request.method == 'OPTIONS':
-        return jsonify({'msg': 'Allow GET, POST methods'}), 200
-
-    else:
-        return jsonify({"method not allowed"}), 405
 
 
 @app.route('/mypolls', methods=['GET', 'POST', 'OPTIONS'])
@@ -188,6 +146,57 @@ def mypolls():
         return jsonify({'msg': 'Allowed GET, POST methods'}), 200
 
     return jsonify({'msg': 'Method not allowed'}), 405
+
+
+@app.route('/mypolls/newpoll', methods=['GET', 'POST', 'OPTIONS'])
+def newpoll():
+    try:
+        verify_jwt_in_request(locations=['headers', 'cookies'])
+    except NoAuthorizationError:
+        return jsonify({'msg': 'Login please!'}), 401
+
+
+    if request.method == 'POST':
+        poll_name = request.json['Poll_name']
+        question = request.json['Questions']
+        question_in_json = json.dumps(question)
+        access_level = request.json['Access_level']
+        # access_level_in_json = json.dumps(access_level)
+
+        if access_level == 'Private':
+            access_granted = request.json['Access_granted']
+
+        else:
+            access_granted = 'All users'
+
+        if poll_name != get_poll_name(poll_name):
+            user_id = get_user_id(session['username'])
+
+            counter_dict = json.loads(question_in_json)
+
+            for q in counter_dict.values():
+                for ans in q:
+                    q[ans] = "0"
+
+            counter_in_json = json.dumps(counter_dict)
+
+            poll = Poll(user_id, poll_name, question_in_json, counter_in_json, access_level, access_granted)
+            db_session.add(poll)
+            db_session.commit()
+
+            return jsonify({'msg': 'The poll was successfully created'}), 200
+
+        return jsonify({'msg': 'Such poll name has already existed'}), 201
+
+    if request.method == 'GET':
+        return jsonify({'msg': 'New Poll page'}), 200
+
+    if request.method == 'OPTIONS':
+        return jsonify({'msg': 'Allow GET, POST methods'}), 200
+
+    else:
+        return jsonify({"method not allowed"}), 405
+
 
 @app.route('/mypolls/<polls_id>', methods=['GET', 'POST', 'OPTIONS'])
 def get_poll(polls_id):

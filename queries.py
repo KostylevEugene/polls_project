@@ -37,9 +37,15 @@ def get_questions_by_poll_id(poll_id):
     questions = db_session.query(Poll.question).filter(Poll.id == poll_id).scalar()
     return questions
 
+def get_email_in_access_granted():
+    email = db_session.query(Poll.access_granted).filter(Poll.polls_name == "Computer203")
+    for i in email:
+        return i
 
-# if __name__ == "__main__":
+
+if __name__ == "__main__":
 #     print(type(signed_in_user('ef45@mail.eu')))
 #     print(get_password_by_email('Jake@mail.eu'))
 #     print(get_polls_list('icds@mail.eu'))
 #     print(get_polls_id('Computer73'))
+    print(get_email_in_access_granted())

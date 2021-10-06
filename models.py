@@ -42,14 +42,15 @@ class Poll(Base):
     question = Column(String(1000))
     counter = Column(String(1000))
     access_level = Column(String(10))
+    access_granted = Column(String(1000))
 
-    def __init__(self, user_id, polls_name, question, counter, access_level):
+    def __init__(self, user_id, polls_name, question, counter, access_level, access_granted):
         self.user_id = user_id
         self.polls_name = polls_name
         self.question = question
         self.counter = counter
         self.access_level = access_level
-
+        self.access_granted = access_granted
 
     def __repr__(self):
         return f'Poll: {self.id}, {self.polls_name}'
