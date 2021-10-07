@@ -200,8 +200,28 @@ def newpoll():
 
 @app.route('/mypolls/<polls_id>', methods=['GET', 'POST', 'OPTIONS'])
 def get_poll(polls_id):
+    questions = get_questions_by_poll_id(polls_id)
     pass
 
+
+
+@app.route('/polls/<polls_id>', methods=['GET', 'POST', 'OPTIONS'])
+def get_poll_for_answer(polls_id):
+
+
+    if request.method == 'GET':
+        access = get_access_level_by_polls_id(polls_id)
+
+        if access == 'Private' and get_email_from_access_granted(session['username'], polls_id):
+            try:
+                verify_jwt_in_request(locations=['headers', 'cookies'])
+            except NoAuthorizationError:
+                return jsonify({'msg': 'Login please!'}), 401
+
+            return jsonify({'Questions': get_questions_by_poll_id(polls_id)})
+
+        #TODO: обработку ошибки, когда не тот пользователь хочет получить доступ к опросу
+        #TODO: напиши пост запрос для отправки ответа
 
 if __name__ == '__main__':
     app.run(debug=True)
