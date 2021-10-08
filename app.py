@@ -206,7 +206,7 @@ def get_poll(polls_id):
 
 
 @app.route('/polls/<polls_id>', methods=['GET', 'POST', 'OPTIONS'])
-def get_poll_for_answer(polls_id):
+def answer_to_poll(polls_id):
 
     if request.method == 'GET':
         access = get_access_level_by_polls_id(polls_id)
@@ -221,8 +221,16 @@ def get_poll_for_answer(polls_id):
 
             return jsonify({'Questions': get_questions_by_poll_id(polls_id)})
 
-        return jsonify({"msg": "You haven't access to this poll"})
-    
+        elif access == 'Private' and access_result != 'Access Granted':
+            return jsonify({"msg": "You haven't access to this poll"})
+
+        elif access == 'Public':
+            return jsonify({'Questions': get_questions_by_poll_id(polls_id)})
+
+    if request.method == 'POST':
+        answers = request.json['Answers']
+        answers_in_json = json.dumps(answers)
+
         #TODO: напиши пост запрос для отправки ответа
 
 if __name__ == '__main__':
