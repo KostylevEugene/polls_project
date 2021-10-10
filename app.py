@@ -241,12 +241,12 @@ def answer_to_poll(polls_id):
 
         list_of_answers = json.loads(answers_in_json)
 
-        for q in list_of_answers.values():
+        for q in list_of_answers.keys():
             counter_in_dict[q][list_of_answers[q]] += 1
 
         counter_in_json = json.dumps(counter_in_dict)
 
-        db_session.query(Poll).filter(Poll.polls_id).update({'counter': counter_in_json}, synchronize_session='fetch')
+        db_session.query(Poll).filter(Poll.id == polls_id).update({'counter': counter_in_json}, synchronize_session='fetch')
         db_session.commit()
         return jsonify({"msg": "Answer accepted"})
 
