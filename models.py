@@ -89,12 +89,11 @@ class Users_answers(Base):
     id = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey(User.id), index=True, nullable=False)
     polls_id = Column(Integer(), ForeignKey(Poll.id), index=True, nullable=False)
-    answer = Column(String(60))
+    answer = Column(String(1000))
 
-    def __init__(self, user_id, polls_id, question_id, answer):
+    def __init__(self, user_id, polls_id, answer):
         self.user_id = user_id
         self.polls_id = polls_id
-        self.question_id = question_id
         self.answer = answer
 
     def __repr__(self):

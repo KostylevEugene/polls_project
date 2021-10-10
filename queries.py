@@ -46,8 +46,15 @@ def get_access_level_by_polls_id(polls_id):
     access = db_session.query(Poll.access_level).filter(Poll.id == polls_id).scalar()
     return access
 
+def get_counter(polls_id):
+    counter = db_session.query(Poll.counter).filter(Poll.id == polls_id).scalar()
+    return counter
 
-if __name__ == "__main__":
+# def update_counter(polls_id, counter):
+#     db_session.query(Poll).filter(Poll.polls_id).update({'counter': counter}, synchronize_session='fetch')
+
+
+# if __name__ == "__main__":
 #     print(type(signed_in_user('ef45@mail.eu')))
 #     print(get_password_by_email('Jake@mail.eu'))
 #     print(get_polls_list('icds@mail.eu'))
@@ -55,4 +62,5 @@ if __name__ == "__main__":
 #     print(get_email_in_access_granted())
 #     print(get_access_level_by_polls_id(1))
     # print(get_email_from_access_granted('o@mail.us', 5))
-    print(get_questions_by_poll_id(5))
+    # print(get_questions_by_poll_id(5))
+    # print(get_counter(7))

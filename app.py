@@ -176,7 +176,7 @@ def newpoll():
 
             for q in counter_dict.values():
                 for ans in q:
-                    q[ans] = "0"
+                    q[ans] = 0
 
             counter_in_json = json.dumps(counter_dict)
 
@@ -231,7 +231,26 @@ def answer_to_poll(polls_id):
         answers = request.json['Answers']
         answers_in_json = json.dumps(answers)
 
-        #TODO: напиши пост запрос для отправки ответа
+        user_id = get_user_id(session['username'])
+
+        answers_to_db = Users_answers(user_id, polls_id, answers_in_json)
+        db_session.add(answers_to_db)
+
+        counter = get_counter(polls_id)
+        counter_in_dict = json.loads(counter)
+
+        list_of_answers = json.loads(answers_in_json)
+
+        for q in list_of_answers.values():
+            counter_in_dict[q][list_of_answers[q]] += 1
+
+        counter_in_json = json.dumps(counter_in_dict)
+
+        db_session.query(Poll).filter(Poll.polls_id).update({'counter': counter_in_json}, synchronize_session='fetch')
+        db_session.commit()
+        return jsonify({"msg": "Answer accepted"})
+
+        #TODO: KeyError 'a'. Не работает статистика.
 
 if __name__ == '__main__':
     app.run(debug=True)
