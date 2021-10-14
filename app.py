@@ -252,5 +252,20 @@ def answer_to_poll(polls_id):
 
         #TODO: KeyError 'a'. Не работает статистика.
 
+
+@app.route('/adminpage/', methods=['GET', 'POST', 'OPTIONS'])
+def adminpage():
+    try:
+        verify_jwt_in_request(locations=['headers', 'cookies'])
+    except NoAuthorizationError:
+        return jsonify({'msg': 'Login please!'}), 401
+
+    if request.method == 'GET':
+        if session['username'] != "admin@mail.ru":
+            return jsonify({'msg': 'You have not access'})
+
+        return jsonify({'msg': 'Welcome home, Admin'})
+
+
 if __name__ == '__main__':
     app.run(debug=True)
