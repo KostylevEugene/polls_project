@@ -253,18 +253,76 @@ def answer_to_poll(polls_id):
         #TODO: KeyError 'a'. Не работает статистика.
 
 
-@app.route('/adminpage/', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/adminpage/<user_id>', methods=['GET', 'POST', 'OPTIONS'])
 def adminpage():
     try:
         verify_jwt_in_request(locations=['headers', 'cookies'])
     except NoAuthorizationError:
         return jsonify({'msg': 'Login please!'}), 401
 
-    if request.method == 'GET':
-        if session['username'] != "admin@mail.ru":
-            return jsonify({'msg': 'You have not access'})
+    if session['username'] != "admin@mail.ru":
+        return jsonify({'msg': 'You have not access'})
 
+    if request.method == 'GET':
         return jsonify({'msg': 'Welcome home, Admin'})
+
+    if request.method == 'POST':
+        username = request.json['Username']
+
+        user_id = get_user_id(username)
+
+        return jsonify({'User_name': username, 'User_id': user_id})
+
+    if request.method == 'OPTIONS':
+        return jsonify({'msg': 'Allow GET, POST methods'}), 200
+
+    else:
+        return jsonify({"method not allowed"}), 405
+
+
+@app.route('/adminpage/delete_user/<user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    try:
+        verify_jwt_in_request(locations=['headers', 'cookies'])
+    except NoAuthorizationError:
+        return jsonify({'msg': 'Login please!'}), 401
+
+    if session['username'] != "admin@mail.ru":
+        return jsonify({'msg': 'You have not access'})
+
+    if request.method == 'DELETE':
+        db_session.query(User).filter(User.id == user_id).delete(synchronize_session='fetch')
+        db_session.commit()
+        return jsonify({'msg': 'The user was deleted'})
+
+    if request.method == 'OPTIONS':
+        return jsonify({'msg': 'Allow DELETE method'}), 200
+
+    else:
+        return jsonify({"method not allowed"}), 405
+
+
+
+@app.route('/adminpage/delete_poll/<polls_id>', methods=['DELETE'])
+def delete_poll(polls_id):
+    try:
+        verify_jwt_in_request(locations=['headers', 'cookies'])
+    except NoAuthorizationError:
+        return jsonify({'msg': 'Login please!'}), 401
+
+    if session['username'] != "admin@mail.ru":
+        return jsonify({'msg': 'You have not access'})
+
+    if request.method == 'DELETE':
+        db_session.query(Poll).filter(Poll.id == polls_id).delete(synchronize_session='fetch')
+        db_session.commit()
+        return jsonify({'msg': 'The poll was deleted'})
+
+    if request.method == 'OPTIONS':
+        return jsonify({'msg': 'Allow DELETE method'}), 200
+
+    else:
+        return jsonify({"method not allowed"}), 405
 
 
 if __name__ == '__main__':
