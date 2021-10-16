@@ -205,11 +205,7 @@ def get_poll(polls_id):
         questions_in_json = json.dumps(questions)
         question_in_dict = json.loads(questions_in_json)
 
-        poll = {"Polls_name": polls_name_in_dict, "Questions": question_in_dict}
-
-        poll_in_json = json.dumps(poll)
-
-        return poll_in_json
+        return jsonify({"Polls_name": polls_name_in_dict, "Questions": question_in_dict})
 
     if request.method == 'POST':
         poll_name = request.json['Poll_name']
@@ -223,6 +219,7 @@ def get_poll(polls_id):
         else:
             access_granted = 'All users'
 
+        #TODO: POST-method. To add access level to GET-method
 
 @app.route('/polls/<polls_id>', methods=['GET', 'POST', 'OPTIONS'])
 def answer_to_poll(polls_id):

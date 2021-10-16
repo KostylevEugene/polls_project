@@ -18,3 +18,10 @@
     "password": "btsd",
     "valid_password": "btsd"
 }
+
+{
+    "name": "Harold",
+    "email": "dscw@mail.eu",
+    "password": "inyh",
+    "valid_password": "inyh"
+}
