@@ -58,20 +58,27 @@ def get_polls_name_by_id(polls_id):
     polls_name = db_session.query(Poll.polls_name).filter(Poll.id == polls_id).scalar()
     return polls_name
 
+def get_access_level(polls_id):
+    access_level = db_session.query(Poll.access_level).filter(Poll.id == polls_id).scalar()
+    return access_level
 
+def get_poll_for_changing(polls_id):
+    poll = db_session.query(Poll.polls_name, Poll.question, Poll.access_level, Poll.access_granted).filter(Poll.id == polls_id).first()
+    return poll
 
 # def update_counter(polls_id, counter):
 #     db_session.query(Poll).filter(Poll.polls_id).update({'counter': counter}, synchronize_session='fetch')
 
 
-# if __name__ == "__main__":
-# #     print(type(signed_in_user('ef45@mail.eu')))
-# #     print(get_password_by_email('Jake@mail.eu'))
-# #     print(get_polls_list('icds@mail.eu'))
-# #     print(get_polls_id('Computer73'))
-# #     print(get_email_in_access_granted())
-# #     print(get_access_level_by_polls_id(1))
-#     # print(get_email_from_access_granted('o@mail.us', 5))
-#     # print(get_questions_by_poll_id(5))
-#     # print(get_counter(7))
-#     print(get_answer(2, 8))
+if __name__ == "__main__":
+# # # #     print(type(signed_in_user('ef45@mail.eu')))
+# # # #     print(get_password_by_email('Jake@mail.eu'))
+# # # #     print(get_polls_list('icds@mail.eu'))
+# # # #     print(get_polls_id('Computer73'))
+# # # #     print(get_email_in_access_granted())
+# # # #     print(get_access_level_by_polls_id(1))
+# # #     # print(get_email_from_access_granted('o@mail.us', 5))
+# # #     # print(get_questions_by_poll_id(5))
+# # #     # print(get_counter(7))
+# # #     print(get_answer(2, 8))
+    print(get_poll(10))

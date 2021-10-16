@@ -57,10 +57,10 @@ class Poll(Base):
 
 
 # class PollSchema(Schema):
-#     id = fields.Int()
-#     user_id = fields.Int()
 #     polls_name = fields.Str()
 #     questions = fields.Str()
+#     access_level = fields.Str()
+#     access_granted = fields.Str()
 
 
 # class Questions(Base):

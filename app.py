@@ -27,6 +27,7 @@ expiration_time = 20000
 
 user_schema = UserSchema()
 
+
 #TODO: Расставь коды
 
 @app.route('/')
@@ -196,16 +197,15 @@ def newpoll():
 
 @app.route('/mypolls/<polls_id>', methods=['GET', 'POST', 'OPTIONS'])
 def get_poll(polls_id):
+    try:
+        verify_jwt_in_request(locations=['headers', 'cookies'])
+    except NoAuthorizationError:
+        return jsonify({'msg': 'Login please!'}), 401
+
     if request.method == 'GET':
-        polls_name = get_polls_name_by_id(polls_id)
-        polls_name_in_json = json.dumps(polls_name)
-        polls_name_in_dict = json.loads(polls_name_in_json)
+        full_poll = get_poll_for_changing(polls_id)
+        return jsonify({"Polls_name": full_poll[0], "Questions": full_poll[1], "Access_level": full_poll[2], "Access_granted": full_poll[3]})
 
-        questions = get_questions_by_poll_id(polls_id)
-        questions_in_json = json.dumps(questions)
-        question_in_dict = json.loads(questions_in_json)
-
-        return jsonify({"Polls_name": polls_name_in_dict, "Questions": question_in_dict})
 
     if request.method == 'POST':
         poll_name = request.json['Poll_name']

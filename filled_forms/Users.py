@@ -25,3 +25,10 @@
     "password": "inyh",
     "valid_password": "inyh"
 }
+
+{
+    "name": "test",
+    "email": "test@mail.eu",
+    "password": "test",
+    "valid_password": "test"
+}
