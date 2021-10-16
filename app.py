@@ -27,15 +27,12 @@ expiration_time = 20000
 
 user_schema = UserSchema()
 
+#TODO: Расставь коды
+
 @app.route('/')
 @app.route('/index')
 def index():
     return jsonify({'msg': 'Gello'})
-
-
-@app.route('/new_poll')
-def new_poll():
-    pass
 
 
 @app.route('/registration', methods=['GET', 'POST'])
@@ -161,7 +158,6 @@ def newpoll():
         question = request.json['Questions']
         question_in_json = json.dumps(question)
         access_level = request.json['Access_level']
-        # access_level_in_json = json.dumps(access_level)
 
         if access_level == 'Private':
             access_granted = request.json['Access_granted']
@@ -169,7 +165,7 @@ def newpoll():
         else:
             access_granted = 'All users'
 
-        if poll_name != get_poll_name(poll_name):
+        if not is_polls_name_exists(poll_name):
             user_id = get_user_id(session['username'])
 
             counter_dict = json.loads(question_in_json)
@@ -200,9 +196,32 @@ def newpoll():
 
 @app.route('/mypolls/<polls_id>', methods=['GET', 'POST', 'OPTIONS'])
 def get_poll(polls_id):
-    questions = get_questions_by_poll_id(polls_id)
-    pass
+    if request.method == 'GET':
+        polls_name = get_polls_name_by_id(polls_id)
+        polls_name_in_json = json.dumps(polls_name)
+        polls_name_in_dict = json.loads(polls_name_in_json)
 
+        questions = get_questions_by_poll_id(polls_id)
+        questions_in_json = json.dumps(questions)
+        question_in_dict = json.loads(questions_in_json)
+
+        poll = {"Polls_name": polls_name_in_dict, "Questions": question_in_dict}
+
+        poll_in_json = json.dumps(poll)
+
+        return poll_in_json
+
+    if request.method == 'POST':
+        poll_name = request.json['Poll_name']
+        question = request.json['Questions']
+        question_in_json = json.dumps(question)
+        access_level = request.json['Access_level']
+
+        if access_level == 'Private':
+            access_granted = request.json['Access_granted']
+
+        else:
+            access_granted = 'All users'
 
 
 @app.route('/polls/<polls_id>', methods=['GET', 'POST', 'OPTIONS'])
@@ -228,29 +247,32 @@ def answer_to_poll(polls_id):
             return jsonify({'Questions': get_questions_by_poll_id(polls_id)})
 
     if request.method == 'POST':
-        answers = request.json['Answers']
-        answers_in_json = json.dumps(answers)
-
         user_id = get_user_id(session['username'])
+        
+        if not is_answer_exists(user_id, polls_id):
 
-        answers_to_db = Users_answers(user_id, polls_id, answers_in_json)
-        db_session.add(answers_to_db)
+            answers = request.json['Answers']
+            answers_in_json = json.dumps(answers)
 
-        counter = get_counter(polls_id)
-        counter_in_dict = json.loads(counter)
+            answers_to_db = Users_answers(user_id, polls_id, answers_in_json)
+            db_session.add(answers_to_db)
 
-        list_of_answers = json.loads(answers_in_json)
+            counter = get_counter(polls_id)
+            counter_in_dict = json.loads(counter)
 
-        for q in list_of_answers.values():
-            counter_in_dict[q][list_of_answers[q]] += 1
+            list_of_answers = json.loads(answers_in_json)
 
-        counter_in_json = json.dumps(counter_in_dict)
+            for q in list_of_answers.keys():
+                counter_in_dict[q][list_of_answers[q]] += 1
 
-        db_session.query(Poll).filter(Poll.polls_id).update({'counter': counter_in_json}, synchronize_session='fetch')
-        db_session.commit()
-        return jsonify({"msg": "Answer accepted"})
+            counter_in_json = json.dumps(counter_in_dict)
 
-        #TODO: KeyError 'a'. Не работает статистика.
+            db_session.query(Poll).filter(Poll.id == polls_id).update({'counter': counter_in_json}, synchronize_session='fetch')
+            db_session.commit()
+            return jsonify({"msg": "Answer accepted"})
+
+        return jsonify({"msg": "You've already answered on this poll"})
+        
 
 if __name__ == '__main__':
     app.run(debug=True)
