@@ -70,7 +70,7 @@ def get_poll_for_changing(polls_id):
 #     db_session.query(Poll).filter(Poll.polls_id).update({'counter': counter}, synchronize_session='fetch')
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 # # # #     print(type(signed_in_user('ef45@mail.eu')))
 # # # #     print(get_password_by_email('Jake@mail.eu'))
 # # # #     print(get_polls_list('icds@mail.eu'))
@@ -81,4 +81,4 @@ if __name__ == "__main__":
 # # #     # print(get_questions_by_poll_id(5))
 # # #     # print(get_counter(7))
 # # #     print(get_answer(2, 8))
-    print(get_poll(10))
+#     print(get_poll_for_changing(10))

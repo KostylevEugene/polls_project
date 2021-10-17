@@ -290,7 +290,11 @@ def answer_to_poll(polls_id):
 
         return jsonify({"msg": "You've already answered on this poll"})
 
+    if request.method == 'OPTIONS':
+        return jsonify({'msg': 'Allow GET, POST, methods'}), 200
 
+    else:
+        return jsonify({"method not allowed"}), 405
 
 
 @app.route('/adminpage/<user_id>', methods=['GET', 'POST', 'OPTIONS'])
