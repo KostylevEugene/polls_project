@@ -153,7 +153,6 @@ def newpoll():
     except NoAuthorizationError:
         return jsonify({'msg': 'Login please!'}), 401
 
-
     if request.method == 'POST':
         poll_name = request.json['Poll_name']
         question = request.json['Questions']
@@ -195,7 +194,7 @@ def newpoll():
         return jsonify({"method not allowed"}), 405
 
 
-@app.route('/mypolls/<polls_id>', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/mypolls/<polls_id>', methods=['GET', 'POST', 'DELETE', 'OPTIONS'])
 def get_poll(polls_id):
     try:
         verify_jwt_in_request(locations=['headers', 'cookies'])
@@ -204,11 +203,14 @@ def get_poll(polls_id):
 
     if request.method == 'GET':
         full_poll = get_poll_for_changing(polls_id)
-        return jsonify({"Polls_name": full_poll[0], "Questions": full_poll[1], "Access_level": full_poll[2], "Access_granted": full_poll[3]})
-
+        return jsonify({"Polls_name": full_poll[0],
+                        "Questions": full_poll[1],
+                        "Access_level": full_poll[2],
+                        "Access_granted": full_poll[3]
+                        })
 
     if request.method == 'POST':
-        poll_name = request.json['Poll_name']
+        polls_name = request.json['Polls_name']
         question = request.json['Questions']
         question_in_json = json.dumps(question)
         access_level = request.json['Access_level']
@@ -219,7 +221,25 @@ def get_poll(polls_id):
         else:
             access_granted = 'All users'
 
-        #TODO: POST-method. To add access level to GET-method
+        db_session.query(Poll).filter(Poll.id == polls_id).update({'polls_name': polls_name,
+                                                                   'question': question_in_json,
+                                                                   'access_level': access_level,
+                                                                   'access_granted': access_granted},
+                                                                  synchronize_session='fetch')
+
+        db_session.commit()
+        return jsonify({'msg': 'The Polls successfully was updated'}), 200
+
+    if request.method == 'DELETE':
+        db_session.query(Poll).filter(Poll.id == polls_id).delete(synchronize_session='fetch')
+        db_session.commit()
+        return jsonify({'msg': 'The Poll was successfully deleted'}), 200
+
+    if request.method == 'OPTIONS':
+        return jsonify({'msg': 'Allow GET, POST, DELETE methods'}), 200
+
+    else:
+        return jsonify({"method not allowed"}), 405
 
 @app.route('/polls/<polls_id>', methods=['GET', 'POST', 'OPTIONS'])
 def answer_to_poll(polls_id):
@@ -269,7 +289,8 @@ def answer_to_poll(polls_id):
             return jsonify({"msg": "Answer accepted"})
 
         return jsonify({"msg": "You've already answered on this poll"})
-        
+
+
 
 
 @app.route('/adminpage/<user_id>', methods=['GET', 'POST', 'OPTIONS'])
