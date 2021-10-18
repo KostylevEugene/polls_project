@@ -113,13 +113,6 @@ def log():
         return jsonify({"method not allowed"}), 405
 
 
-@app.route('/users/<id>', methods=['GET'])
-def get_all_users(id):
-    user = User.query.get(id)
-    return user_schema.dump(user)
-
-
-
 @app.route('/mypolls', methods=['GET', 'POST', 'OPTIONS'])
 def mypolls():
     try:
@@ -128,10 +121,8 @@ def mypolls():
         return jsonify({'msg': 'Login please!'}), 401
 
     if request.method == 'GET':
-        raw_polls_list = get_polls_list(session['username'])
-        # polls_list_in_json = json.dumps(raw_polls_list)
-
-        return jsonify({'msg': raw_polls_list}), 200
+        polls_list = get_polls_list(session['username'])
+        return jsonify({'msg': polls_list}), 200
 
     if request.method == 'POST':
         polls_name = request.json['Poll_name']
@@ -241,6 +232,7 @@ def get_poll(polls_id):
     else:
         return jsonify({"method not allowed"}), 405
 
+
 @app.route('/polls/<polls_id>', methods=['GET', 'POST', 'OPTIONS'])
 def answer_to_poll(polls_id):
 
@@ -255,13 +247,13 @@ def answer_to_poll(polls_id):
             except NoAuthorizationError:
                 return jsonify({'msg': 'Login please!'}), 401
 
-            return jsonify({'Questions': get_questions_by_poll_id(polls_id)})
+            return jsonify({'Questions': json.loads(get_questions_by_poll_id(polls_id))})
 
         elif access == 'Private' and access_result != 'Access Granted':
             return jsonify({"msg": "You haven't access to this poll"})
 
         elif access == 'Public':
-            return jsonify({'Questions': get_questions_by_poll_id(polls_id)})
+            return jsonify({'Questions': json.loads(get_questions_by_poll_id(polls_id))})
 
     if request.method == 'POST':
         user_id = get_user_id(session['username'])
@@ -324,7 +316,7 @@ def adminpage():
         return jsonify({"method not allowed"}), 405
 
 
-@app.route('/adminpage/delete_user/<user_id>', methods=['DELETE'])
+@app.route('/adminpage/users/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
     try:
         verify_jwt_in_request(locations=['headers', 'cookies'])
@@ -346,8 +338,7 @@ def delete_user(user_id):
         return jsonify({"method not allowed"}), 405
 
 
-
-@app.route('/adminpage/delete_poll/<polls_id>', methods=['DELETE'])
+@app.route('/adminpage/polls/<polls_id>', methods=['DELETE'])
 def delete_poll(polls_id):
     try:
         verify_jwt_in_request(locations=['headers', 'cookies'])
@@ -367,6 +358,31 @@ def delete_poll(polls_id):
 
     else:
         return jsonify({"method not allowed"}), 405
+
+
+@app.route('/stat', methods=['GET', 'OPTIONS'])
+def get_stat():
+    try:
+        verify_jwt_in_request(locations=['headers', 'cookies'])
+    except NoAuthorizationError:
+        return jsonify({'msg': 'Login please!'}), 401
+
+    if request.method == 'GET':
+        polls = get_polls_list(session['username'])
+        return jsonify({'Polls': polls})
+
+
+@app.route('/stat/<polls_id>', methods=['GET', 'POST'])
+def get_polls_stat(polls_id):
+    try:
+        verify_jwt_in_request(locations=['headers', 'cookies'])
+    except NoAuthorizationError:
+        return jsonify({'msg': 'Login please!'}), 401
+
+    if request.method == 'GET':
+        counter = get_counter(polls_id)
+        users_amount = len(get_answered_users(polls_id))
+        return jsonify({'Questions': json.loads(counter), 'Users_amount': users_amount})
 
 
 if __name__ == '__main__':

@@ -66,6 +66,11 @@ def get_poll_for_changing(polls_id):
     poll = db_session.query(Poll.polls_name, Poll.question, Poll.access_level, Poll.access_granted).filter(Poll.id == polls_id).first()
     return poll
 
+def get_answered_users(polls_id):
+    users = db_session.query(Users_answers.user_id).filter(Users_answers.polls_id == polls_id).all()
+    return users
+
+
 # def update_counter(polls_id, counter):
 #     db_session.query(Poll).filter(Poll.polls_id).update({'counter': counter}, synchronize_session='fetch')
 
@@ -82,3 +87,4 @@ def get_poll_for_changing(polls_id):
 # # #     # print(get_counter(7))
 # # #     print(get_answer(2, 8))
 #     print(get_poll_for_changing(10))
+#     print(len(get_answered_users(8)))
