@@ -1,4 +1,4 @@
-from db import Base, engine
+from webapp.db import Base, engine
 from marshmallow import Schema, fields
 from sqlalchemy import Column, Integer, String, ForeignKey
 

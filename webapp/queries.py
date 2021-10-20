@@ -1,5 +1,5 @@
-from db import db_session
-from models import User, Poll, Users_answers
+from webapp.db import db_session
+from webapp.models import User, Poll, Users_answers
 
 def signed_in_user(user_email):
     user = db_session.query(User.email).filter(User.email == user_email).scalar()

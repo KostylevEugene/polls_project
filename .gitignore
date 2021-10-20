@@ -1,4 +1,4 @@
 venv
-config.py
+webapp/config.py
 .idea
 __pycache__

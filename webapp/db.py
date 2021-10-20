@@ -1,4 +1,4 @@
-from config import DB_ENGINE
+from webapp.config import DB_ENGINE
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base     # (?) для определения (или помощи создания) таблиц и моделей
 from sqlalchemy.orm import sessionmaker, scoped_session

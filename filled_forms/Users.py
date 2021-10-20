@@ -32,3 +32,10 @@
     "password": "test",
     "valid_password": "test"
 }
+
+{
+    "name": "Phoebie",
+    "email": "oims@mail.eu",
+    "password": "iuns",
+    "valid_password": "iuns"
+}

@@ -1,6 +1,6 @@
 import bcrypt
-from db import db_session
-from models import User
+from webapp.db import db_session
+from webapp.models import User
 
 name = 'admin'
 email = "admin@mail.ru"
