@@ -41,7 +41,7 @@ def to_sign_up():
             db_session.add(new_user)
             db_session.commit()
 
-            return user_schema.dump(new_user)
+            return jsonify({'msg': 'Registration success'})
 
     if request.method == 'GET':
         return jsonify({'msg': 'Registration page'}), 201
@@ -50,7 +50,7 @@ def to_sign_up():
         return jsonify({'msg': 'Allow GET, POST methods'}), 200
 
     else:
-        return jsonify({"method not allowed"}), 405
+        return jsonify({'msg':"method not allowed"}), 405
 
 
 @blueprint.route('/log', methods=['GET', 'POST'])

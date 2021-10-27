@@ -29,8 +29,8 @@
 {
     "name": "test",
     "email": "test@mail.eu",
-    "password": "test",
-    "valid_password": "test"
+    "password": "testtest",
+    "valid_password": "testtest"
 }
 
 {
