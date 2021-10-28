@@ -55,7 +55,7 @@ def to_sign_up():
 
 @blueprint.route('/log', methods=['GET', 'POST'])
 def to_sign_in():
-    session['username'] = 'guest'
+    session['username'] = 'guest'       #  email will be username
 
     if request.method == 'POST':
         email = request.json['email']

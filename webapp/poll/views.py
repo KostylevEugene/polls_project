@@ -9,7 +9,7 @@ blueprint = Blueprint('poll', __name__, url_prefix='/polls')
 
 
 @blueprint.route('/mypolls', methods=['GET', 'POST', 'OPTIONS'])
-def mypolls():
+def get_mypolls():
     try:
         verify_jwt_in_request(locations=['headers', 'cookies'])
     except NoAuthorizationError:
@@ -17,7 +17,12 @@ def mypolls():
 
     if request.method == 'GET':
         polls_list = get_polls_list(session['username'])
-        return jsonify({'msg': polls_list}), 200
+
+        if polls_list:
+            return jsonify({'msg': polls_list}), 200
+
+        return jsonify({'msg': "You haven't got any polls yet"})
+
 
     if request.method == 'POST':
         polls_name = request.json['Poll_name']

@@ -75,10 +75,10 @@ def get_answered_users(polls_id):
 #     db_session.query(Poll).filter(Poll.polls_id).update({'counter': counter}, synchronize_session='fetch')
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 # # # #     print(type(signed_in_user('ef45@mail.eu')))
 # # # #     print(get_password_by_email('Jake@mail.eu'))
-# # # #     print(get_polls_list('icds@mail.eu'))
+    print(get_polls_list('test@mail.eu'))
 # # # #     print(get_polls_id('Computer73'))
 # # # #     print(get_email_in_access_granted())
 # # # #     print(get_access_level_by_polls_id(1))
