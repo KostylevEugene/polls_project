@@ -16,20 +16,21 @@ def get_mypolls():
         return jsonify({'msg': 'Login please!'}), 401
 
     if request.method == 'GET':
-        polls_list = get_polls_list(session['username'])
+        form = request.args.to_dict()
+        print(form)
+        polls_list = get_polls_list(form['session'])
 
         if polls_list:
             return jsonify({'msg': polls_list}), 200
 
         return jsonify({'msg': "You haven't got any polls yet"})
 
-
     if request.method == 'POST':
         polls_name = request.json['Poll_name']
 
         polls_id = get_polls_id(polls_name)
 
-        return jsonify({'polls_id': polls_id})
+        return jsonify({'polls_id': polls_id}), 200
 
     if request.method == 'OPTIONS':
         return jsonify({'msg': 'Allowed GET, POST methods'}), 200
@@ -38,7 +39,7 @@ def get_mypolls():
 
 
 @blueprint.route('/mypolls/newpoll', methods=['GET', 'POST', 'OPTIONS'])
-def newpoll():
+def create_newpoll():
     try:
         verify_jwt_in_request(locations=['headers', 'cookies'])
     except NoAuthorizationError:

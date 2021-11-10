@@ -55,7 +55,7 @@ def to_sign_up():
 
 @blueprint.route('/log', methods=['GET', 'POST'])
 def to_sign_in():
-    session['username'] = 'guest'       #  email will be username
+    session['username'] = 'guest'       # the email will be the username
 
     if request.method == 'POST':
         email = request.json['email']
@@ -74,7 +74,7 @@ def to_sign_in():
                                                      expires_delta=datetime.timedelta(seconds=expiration_time))
                 access_token = create_access_token(identity=email,
                                                    expires_delta=datetime.timedelta(seconds=expiration_time))
-                response = jsonify({'login': True, 'JWT': access_token, 'refresh_token': refresh_token})
+                response = jsonify({"login": True, "JWT": access_token, "refresh_token": refresh_token})
                 # app.config['JWT_COOKIE_CSRF_PROTECT'] = False
                 response.status_code = 200
                 return response
