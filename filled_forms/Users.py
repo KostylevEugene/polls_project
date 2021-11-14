@@ -39,3 +39,10 @@
     "password": "iuns",
     "valid_password": "iuns"
 }
+
+{
+    "name": "nikola",
+    "email": "nikola@mail.ru",
+    "password": "nikolanikola",
+    "valid_password": "nikolanikola"
+}
