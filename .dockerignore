@@ -1,0 +1,6 @@
+__pycache__
+.git
+Dockerfile
+.idea
+venv
+TODO.txt
